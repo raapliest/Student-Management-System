@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SAPMS — Register</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/sapms.css}">
+</head>
+<body>
+<div class="login-page">
+  <div class="login-box" style="max-width:440px">
+    <div class="login-logo">
+      <div class="login-brand-icon">S</div>
+      <h1>Student Registration</h1>
+      <p>Fill in your details to create an account</p>
+    </div>
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+    <form th:action="@{/register}" method="post">
+      <div class="form-group">
+        <label class="form-label">Full Name <span style="color:var(--danger)">*</span></label>
+        <input class="form-control" type="text" name="fullName" placeholder="e.g. John Doe" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input class="form-control" type="email" name="email" placeholder="your@email.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Select Major <span style="color:var(--danger)">*</span></label>
+        <select class="form-control" name="majorNo" required>
+          <option value="">— Choose a major —</option>
+          <option th:each="m : ${majors}" th:value="${m.majorNo}" th:text="${m.majorName}"></option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:11px;margin-top:4px;">
+        Create Account
+      </button>
+    </form>
+    <p style="text-align:center;margin-top:16px;font-size:13px;color:var(--gray-400)">
+      Already have an account? <a th:href="@{/login}">Sign in</a>
+    </p>
+  </div>
+</div>
+<script th:src="@{/js/sapms.js}"></script>
+</body>
+</html>

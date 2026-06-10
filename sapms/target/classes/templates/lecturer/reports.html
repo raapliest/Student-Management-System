@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SAPMS — My Reports</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/sapms.css}">
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon">S</div>
+    <div class="brand-info"><h2>SAPMS</h2><span>Lecturer</span></div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-group">
+      <span class="nav-label">Teaching</span>
+      <a th:href="@{/lecturer/dashboard}" class="nav-item"><span class="nav-icon">🏠</span>Dashboard</a>
+      <a th:href="@{/lecturer/reports}"   class="nav-item  active"><span class="nav-icon">📊</span>My Reports</a>
+    </div>
+    <div class="nav-group">
+      <span class="nav-label">Account</span>
+      <a th:href="@{/lecturer/profile}" class="nav-item"><span class="nav-icon">👤</span>My Profile</a>
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="sidebar-user">
+      <div class="sidebar-avatar">L</div>
+      <div class="sidebar-user-info"><p th:text="${lecturer != null ? lecturer.fullName : 'Lecturer'}">Lecturer</p><span>Lecturer</span></div>
+    </div>
+    <form th:action="@{/logout}" method="post">
+      <button type="submit" class="btn-logout">🚪 Sign Out</button>
+    </form>
+  </div>
+</aside>
+<main class="main">
+  <div class="topbar">
+    <span class="topbar-title">My Course Reports</span>
+  </div>
+  <div class="content">
+    <div class="card">
+      <div class="card-header"><h3>Performance Summary by Course</h3></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Code</th><th>Course Name</th><th>Students</th><th>Passing</th><th>Failing</th><th>At Risk</th><th>Avg Score</th></tr></thead>
+          <tbody>
+            <tr th:each="r : ${stats}">
+              <td class="td-mono" th:text="${r.courseCode}"></td>
+              <td class="td-name" th:text="${r.courseName}"></td>
+              <td style="text-align:center;color:var(--gray-500)" th:text="${r.total}"></td>
+              <td><span class="badge badge-pass" th:text="${r.passing ?: 0}"></span></td>
+              <td><span class="badge badge-fail" th:text="${r.failing ?: 0}"></span></td>
+              <td><span class="badge badge-risk" th:text="${r.at_risk ?: 0}"></span></td>
+              <td style="font-weight:700;color:var(--blue-700)" th:text="${r.avg_score ?: '—'}"></td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(stats)}">
+              <td colspan="7"><div class="empty-state"><div class="empty-state-icon">📊</div><p>No data yet.</p></div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+</div>
+  <script th:src="@{/js/sapms.js}"></script>
+</body></html>

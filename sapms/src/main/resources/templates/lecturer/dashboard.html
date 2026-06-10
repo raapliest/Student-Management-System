@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SAPMS — Lecturer Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/sapms.css}">
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon">S</div>
+    <div class="brand-info"><h2>SAPMS</h2><span>Lecturer</span></div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-group"><span class="nav-label">Teaching</span>
+      <a th:href="@{/lecturer/dashboard}" class="nav-item"><span class="nav-icon">🏠</span>Dashboard</a>
+      <a th:href="@{/lecturer/reports}" class="nav-item"><span class="nav-icon">📊</span>My Reports</a>
+    </div>
+    <div class="nav-group"><span class="nav-label">Account</span>
+      <a th:href="@{/lecturer/profile}" class="nav-item"><span class="nav-icon">👤</span>My Profile</a>
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="sidebar-user">
+      <div class="sidebar-avatar">L</div>
+      <div class="sidebar-user-info"><p th:text="${lecturer != null ? lecturer.fullName : 'Lecturer'}">Lecturer</p><span>Lecturer</span></div>
+    </div>
+    <form th:action="@{/logout}" method="post"><button type="submit" class="btn-logout">🚪 Sign Out</button></form>
+  </div>
+</aside>
+<main class="main">
+  <div class="topbar">
+    <span class="topbar-title">My Dashboard</span>
+    <div class="topbar-right">
+      <span class="topbar-badge" th:text="${lecturer.fullName}">Lecturer</span>
+    </div>
+  </div>
+  <div class="content">
+    <div class="stats-grid stats-2">
+      <div class="stat-card"><div class="stat-icon-wrap">📚</div><div class="stat-value" th:text="${totalCourses}">0</div><div class="stat-label">My Courses</div></div>
+      <div class="stat-card"><div class="stat-icon-wrap">👥</div><div class="stat-value" th:text="${totalStudents}">0</div><div class="stat-label">Students Taught</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 340px;gap:20px">
+      <div class="card">
+        <div class="card-header"><h3>My Courses</h3></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Code</th><th>Course</th><th>Credits</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr th:each="c : ${courses}">
+                <td class="td-mono" th:text="${c.courseCode}"></td>
+                <td class="td-name" th:text="${c.courseName}"></td>
+                <td><span class="tag" th:text="${c.creditHours + ' SKS'}"></span></td>
+                <td style="white-space:nowrap">
+                  <a th:href="@{/lecturer/courses/} + ${c.id} + '/grades'" class="btn btn-primary btn-xs" style="margin-right:4px">📝 Grades</a>
+                  <a th:href="@{/lecturer/courses/} + ${c.id} + '/attendance'" class="btn btn-outline btn-xs" style="margin-right:4px">📅 Attend</a>
+                  <a th:href="@{/lecturer/ai-warning/} + ${c.id}" class="btn btn-xs" style="background:#f0f9ff;border:1px solid var(--blue-200);color:var(--blue-700)">🤖 AI</a>
+                </td>
+              </tr>
+              <tr th:if="${#lists.isEmpty(courses)}">
+                <td colspan="4"><div class="empty-state"><div class="empty-state-icon">📚</div><p>No courses assigned.</p></div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h3>📢 Announcements</h3></div>
+        <div class="card-body">
+          <div th:each="a : ${announcements}" class="announce-item">
+            <h4 th:text="${a.title}"></h4>
+            <p th:text="${#strings.abbreviate(a.content, 100)}"></p>
+            <div class="announce-meta"><span th:text="${#temporals.format(a.createdAt,'dd MMM yyyy')}"></span></div>
+          </div>
+          <div th:if="${#lists.isEmpty(announcements)}" class="empty-state">
+            <div class="empty-state-icon">📢</div><p>No announcements.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+</div>
+  <script th:src="@{/js/sapms.js}"></script>
+</body></html>

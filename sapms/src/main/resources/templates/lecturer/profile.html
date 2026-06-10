@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SAPMS — My Profile</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/sapms.css}">
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon">S</div>
+    <div class="brand-info"><h2>SAPMS</h2><span>Lecturer</span></div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-group">
+      <span class="nav-label">Teaching</span>
+      <a th:href="@{/lecturer/dashboard}" class="nav-item"><span class="nav-icon">🏠</span>Dashboard</a>
+      <a th:href="@{/lecturer/reports}"   class="nav-item"><span class="nav-icon">📊</span>My Reports</a>
+    </div>
+    <div class="nav-group">
+      <span class="nav-label">Account</span>
+      <a th:href="@{/lecturer/profile}" class="nav-item  active"><span class="nav-icon">👤</span>My Profile</a>
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="sidebar-user">
+      <div class="sidebar-avatar">L</div>
+      <div class="sidebar-user-info"><p th:text="${lecturer != null ? lecturer.fullName : 'Lecturer'}">Lecturer</p><span>Lecturer</span></div>
+    </div>
+    <form th:action="@{/logout}" method="post">
+      <button type="submit" class="btn-logout">🚪 Sign Out</button>
+    </form>
+  </div>
+</aside>
+<main class="main">
+  <div class="topbar"><span class="topbar-title">My Profile</span></div>
+  <div class="content">
+    <div th:if="${param.success}" class="alert alert-success">✓ Profile updated successfully.</div>
+    <div th:if="${pwSuccess}" class="alert alert-success">✓ Password changed successfully.</div>
+    <div th:if="${pwError}" class="alert alert-error" th:text="${pwError}"></div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-header"><h3>Personal Information</h3></div>
+        <div class="card-body">
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:22px;padding-bottom:18px;border-bottom:1px solid var(--gray-100)">
+            <div style="width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,var(--blue-500),var(--blue-700));color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;flex-shrink:0" th:text="${#strings.substring(lecturer.fullName,0,1)}">L</div>
+            <div>
+              <p style="font-weight:700;font-size:15px;color:var(--gray-800)" th:text="${lecturer.fullName}"></p>
+              <p style="font-size:12px;color:var(--gray-400);font-family:monospace;margin-top:2px" th:text="${lecturer.lecturerNo}"></p>
+            </div>
+          </div>
+          <form th:action="@{/lecturer/profile/update}" method="post">
+            <div class="form-group"><label class="form-label">Full Name</label><input class="form-control" name="fullName" th:value="${lecturer.fullName}" required></div>
+            <div class="form-group"><label class="form-label">Email Address</label><input class="form-control" name="email" type="email" th:value="${lecturer.email}"></div>
+            <div class="form-group"><label class="form-label">Username</label><input class="form-control" th:value="${username}" disabled></div>
+            <button type="submit" class="btn btn-primary">Update Profile</button>
+          </form>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h3>Change Password</h3></div>
+        <div class="card-body">
+          <form th:action="@{/lecturer/profile/password}" method="post">
+            <div class="form-group"><label class="form-label">Current Password</label><input class="form-control" name="oldPassword" type="password" required></div>
+            <div class="form-group"><label class="form-label">New Password <span style="color:var(--gray-400);font-size:11px">(min. 6 chars)</span></label><input class="form-control" name="newPassword" type="password" required minlength="6"></div>
+            <button type="submit" class="btn btn-success">Change Password</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+</div>
+  <script th:src="@{/js/sapms.js}"></script>
+</body></html>

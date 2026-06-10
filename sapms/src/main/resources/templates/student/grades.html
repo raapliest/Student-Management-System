@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SAPMS — My Grades</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/sapms.css}">
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon">S</div>
+    <div class="brand-info"><h2>SAPMS</h2><span>Student</span></div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-group"><span class="nav-label">Academic</span>
+      <a th:href="@{/student/dashboard}" class="nav-item"><span class="nav-icon">🏠</span>Dashboard</a>
+      <a th:href="@{/student/grades}" class="nav-item"><span class="nav-icon">📝</span>My Grades</a>
+      <a th:href="@{/student/attendance}" class="nav-item"><span class="nav-icon">📅</span>Attendance</a>
+      <a th:href="@{/student/ai-advisor}" class="nav-item"><span class="nav-icon">🤖</span>AI Advisor</a>
+    </div>
+    <div class="nav-group"><span class="nav-label">Account</span>
+      <a th:href="@{/student/profile}" class="nav-item"><span class="nav-icon">👤</span>My Profile</a>
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="sidebar-user">
+      <div class="sidebar-avatar" th:text="${student != null ? #strings.substring(student.fullName,0,1) : 'S'}">S</div>
+      <div class="sidebar-user-info">
+        <p th:text="${student != null ? student.fullName : 'Student'}">Student</p>
+        <span>Student</span>
+      </div>
+    </div>
+    <form th:action="@{/logout}" method="post"><button type="submit" class="btn-logout">🚪 Sign Out</button></form>
+  </div>
+</aside>
+<main class="main">
+  <div class="topbar"><span class="topbar-title">My Grades</span></div>
+  <div class="content">
+    <div style="display:flex;gap:14px;margin-bottom:22px;flex-wrap:wrap">
+      <div class="stat-card" style="display:inline-flex;gap:16px;align-items:center;flex:0 0 auto">
+        <div class="stat-icon-wrap">📊</div>
+        <div><div class="stat-value" th:text="${avgScore}">0</div><div class="stat-label">Average Score</div></div>
+      </div>
+      <div class="stat-card" style="display:inline-flex;gap:16px;align-items:center;flex:0 0 auto">
+        <div class="stat-icon-wrap">🎓</div>
+        <div>
+          <div class="stat-value" th:text="${gpa}">0.00</div>
+          <div class="stat-label">GPA (4.0 Scale)</div>
+        </div>
+      </div>
+      <div class="stat-card" style="display:inline-flex;gap:16px;align-items:center;flex:0 0 auto">
+        <div class="stat-icon-wrap purple">⭐</div>
+        <div><div class="stat-value" style="font-size:18px" th:text="${gpaLabel}">—</div><div class="stat-label">Academic Standing</div></div>
+      </div>
+      <div class="stat-card" style="display:inline-flex;gap:16px;align-items:center;flex:0 0 auto">
+        <div class="stat-icon-wrap">📚</div>
+        <div><div class="stat-value" th:text="${totalCredits}">0</div><div class="stat-label">Total Credits</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <h3>Academic Performance</h3>
+        <a th:href="@{/student/ai-advisor}" class="btn btn-sm" style="background:var(--blue-50);border:1px solid var(--blue-200);color:var(--blue-700)">🤖 Get AI Advice</a>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Code</th><th>Course Name</th><th>Assignment (20%)</th><th>Midterm (30%)</th><th>Final (50%)</th><th>Total</th><th>Grade</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr th:each="g : ${grades}">
+              <td class="td-mono" th:text="${g.courseCode}"></td>
+              <td class="td-name" th:text="${g.courseName}"></td>
+              <td class="td-muted" th:text="${g.assignmentScore ?: '—'}"></td>
+              <td class="td-muted" th:text="${g.midtermScore ?: '—'}"></td>
+              <td class="td-muted" th:text="${g.finalScore ?: '—'}"></td>
+              <td style="font-weight:700" th:text="${g.totalScore ?: '—'}"></td>
+              <td style="font-weight:800;font-size:17px;color:var(--blue-700)" th:text="${g.gradeLetter ?: '—'}"></td>
+              <td>
+                <span th:if="${g.status=='PASS'}"    class="badge badge-pass">Pass</span>
+                <span th:if="${g.status=='FAIL'}"    class="badge badge-fail">Fail</span>
+                <span th:if="${g.status=='AT_RISK'}" class="badge badge-risk">At Risk</span>
+                <span th:if="${g.status=='ACTIVE'}"  class="badge badge-active">Active</span>
+              </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(grades)}">
+              <td colspan="8"><div class="empty-state"><div class="empty-state-icon">📝</div><p>No grades yet.</p></div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+</div>
+  <script th:src="@{/js/sapms.js}"></script>
+</body></html>

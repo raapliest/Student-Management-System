@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SAPMS — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/sapms.css}">
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon">S</div>
+    <div class="brand-info"><h2>SAPMS</h2><span>Admin Panel</span></div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-group"><span class="nav-label">Overview</span>
+      <a th:href="@{/admin/dashboard}" class="nav-item active"><span class="nav-icon">🏠</span>Dashboard</a>
+    </div>
+    <div class="nav-group"><span class="nav-label">Management</span>
+      <a th:href="@{/admin/students}" class="nav-item"><span class="nav-icon">👥</span>Students</a>
+      <a th:href="@{/admin/lecturers}" class="nav-item"><span class="nav-icon">👨‍🏫</span>Lecturers</a>
+      <a th:href="@{/admin/courses}" class="nav-item"><span class="nav-icon">📚</span>Courses</a>
+    </div>
+    <div class="nav-group"><span class="nav-label">Communication</span>
+      <a th:href="@{/admin/announcements}" class="nav-item"><span class="nav-icon">📢</span>Announcements</a>
+    </div>
+    <div class="nav-group"><span class="nav-label">Analytics</span>
+      <a th:href="@{/admin/reports}" class="nav-item"><span class="nav-icon">📊</span>Reports</a>
+    </div>
+    <div class="nav-group"><span class="nav-label">System</span>
+      <a th:href="@{/register}" class="nav-item"><span class="nav-icon">➕</span>Register Student</a>
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="sidebar-user">
+      <div class="sidebar-avatar">A</div>
+      <div class="sidebar-user-info"><p>Administrator</p><span>System Admin</span></div>
+    </div>
+    <form th:action="@{/logout}" method="post">
+      <button type="submit" class="btn-logout">🚪 Sign Out</button>
+    </form>
+  </div>
+</aside>
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <span class="topbar-title">Dashboard</span>
+    </div>
+    <div class="topbar-right">
+      <span class="topbar-badge">📅 Academic Year 2024/2025</span>
+    </div>
+  </div>
+  <div class="content">
+    <div class="stats-grid stats-4">
+      <div class="stat-card">
+        <div class="stat-icon-wrap">👥</div>
+        <div class="stat-value" th:text="${totalStudents}">0</div>
+        <div class="stat-label">Total Students</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon-wrap">📚</div>
+        <div class="stat-value" th:text="${totalCourses}">0</div>
+        <div class="stat-label">Active Courses</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon-wrap purple">👨‍🏫</div>
+        <div class="stat-value" th:text="${totalLecturers}">0</div>
+        <div class="stat-label">Lecturers</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon-wrap red">⚠</div>
+        <div class="stat-value" th:text="${atRiskCount}">0</div>
+        <div class="stat-label">Students At Risk</div>
+      </div>
+    </div>
+
+    <div class="grid-auto">
+      <div>
+        <div class="card">
+          <div class="card-header">
+            <h3>Grade Distribution</h3>
+            <a th:href="@{/admin/reports}" class="btn btn-outline btn-sm">View Full Report</a>
+          </div>
+          <div class="card-body">
+            <div class="progress-wrap" style="margin-bottom:14px">
+              <div class="progress-label">
+                <span style="color:var(--success);font-weight:600">✓ Passing</span>
+                <strong th:text="${passingCount}">0</strong>
+              </div>
+              <div class="progress-track">
+                <div class="progress-fill" style="background:var(--success);width:0"
+                  th:data-width="${passingCount > 0 ? (passingCount * 100 / (passingCount + failingCount + atRiskCount + 1)) : 0}"></div>
+              </div>
+            </div>
+            <div class="progress-wrap" style="margin-bottom:14px">
+              <div class="progress-label">
+                <span style="color:var(--danger);font-weight:600">✗ Failing</span>
+                <strong th:text="${failingCount}">0</strong>
+              </div>
+              <div class="progress-track">
+                <div class="progress-fill" style="background:var(--danger);width:0"
+                  th:data-width="${failingCount > 0 ? (failingCount * 100 / (passingCount + failingCount + atRiskCount + 1)) : 0}"></div>
+              </div>
+            </div>
+            <div class="progress-wrap">
+              <div class="progress-label">
+                <span style="color:var(--warning);font-weight:600">⚡ At Risk</span>
+                <strong th:text="${atRiskCount}">0</strong>
+              </div>
+              <div class="progress-track">
+                <div class="progress-fill" style="background:var(--warning);width:0"
+                  th:data-width="${atRiskCount > 0 ? (atRiskCount * 100 / (passingCount + failingCount + atRiskCount + 1)) : 0}"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3>Recent Students</h3>
+            <a th:href="@{/admin/students}" class="btn btn-outline btn-sm">View All</a>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Student No</th><th>Name</th><th>Major</th><th>Class</th></tr></thead>
+              <tbody>
+                <tr th:each="s,stat : ${recentStudents}" th:if="${stat.index &lt; 8}">
+                  <td class="td-mono" th:text="${s.studentNo}"></td>
+                  <td class="td-name" th:text="${s.fullName}"></td>
+                  <td class="td-muted" th:text="${s.majorName}"></td>
+                  <td class="td-muted" th:text="${s.className}"></td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(recentStudents)}">
+                  <td colspan="4"><div class="empty-state"><div class="empty-state-icon">👥</div><p>No students yet</p></div></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card" style="height:100%">
+          <div class="card-header">
+            <h3>📢 Announcements</h3>
+            <a th:href="@{/admin/announcements}" class="btn btn-outline btn-sm">Manage</a>
+          </div>
+          <div class="card-body">
+            <div th:each="a,stat : ${announcements}" th:if="${stat.index &lt; 6}" class="announce-item">
+              <h4 th:text="${a.title}"></h4>
+              <p th:text="${#strings.abbreviate(a.content, 90)}"></p>
+              <div class="announce-meta">
+                <span class="badge" th:classappend="${a.targetRole=='ALL' ? 'badge-all' : (a.targetRole=='STUDENT' ? 'badge-student' : 'badge-lecturer')}" th:text="${a.targetRole}"></span>
+                <span th:text="${#temporals.format(a.createdAt,'dd MMM yyyy')}"></span>
+              </div>
+            </div>
+            <div th:if="${#lists.isEmpty(announcements)}" class="empty-state">
+              <div class="empty-state-icon">📢</div>
+              <p>No announcements yet</p>
+              <small><a th:href="@{/admin/announcements}">Post one now</a></small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+</div>
+  <script th:src="@{/js/sapms.js}"></script>
+</body></html>

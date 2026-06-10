@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SAPMS — Attendance</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/sapms.css}">
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon">S</div>
+    <div class="brand-info"><h2>SAPMS</h2><span>Lecturer</span></div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-group"><span class="nav-label">Teaching</span>
+      <a th:href="@{/lecturer/dashboard}" class="nav-item"><span class="nav-icon">🏠</span>Dashboard</a>
+      <a th:href="@{/lecturer/reports}" class="nav-item"><span class="nav-icon">📊</span>My Reports</a>
+    </div>
+    <div class="nav-group"><span class="nav-label">Account</span>
+      <a th:href="@{/lecturer/profile}" class="nav-item"><span class="nav-icon">👤</span>My Profile</a>
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="sidebar-user">
+      <div class="sidebar-avatar">L</div>
+      <div class="sidebar-user-info"><p th:text="${lecturer != null ? lecturer.fullName : 'Lecturer'}">Lecturer</p><span>Lecturer</span></div>
+    </div>
+    <form th:action="@{/logout}" method="post"><button type="submit" class="btn-logout">🚪 Sign Out</button></form>
+  </div>
+</aside>
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <a th:href="@{/lecturer/dashboard}" class="btn btn-outline btn-sm">← Back</a>
+      <span class="topbar-title" th:text="${'Attendance — ' + course.courseName}"></span>
+    </div>
+    <div class="topbar-right">
+      <button class="btn btn-primary btn-sm" onclick="openModal('bulkModal')">📋 Bulk Attendance</button>
+    </div>
+  </div>
+  <div class="content">
+    <div th:if="${param.bulk}" class="alert alert-success">✓ Bulk attendance recorded.</div>
+    <div class="stats-grid stats-3">
+      <div class="stat-card"><div class="stat-icon-wrap green">✅</div><div class="stat-value" th:text="${presentCount}">0</div><div class="stat-label">Present</div></div>
+      <div class="stat-card"><div class="stat-icon-wrap red">❌</div><div class="stat-value" th:text="${absentCount}">0</div><div class="stat-label">Absent</div></div>
+      <div class="stat-card"><div class="stat-icon-wrap amber">⏰</div><div class="stat-value" th:text="${lateCount}">0</div><div class="stat-label">Late</div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3>Record Single Attendance</h3></div>
+      <div class="card-body">
+        <form th:action="@{/lecturer/courses/} + ${course.id} + '/attendance/record'" method="post">
+          <div class="att-form-grid">
+            <div class="form-group" style="margin-bottom:0">
+              <label class="form-label">Student</label>
+              <select class="form-control" name="studentNo" required>
+                <option value="">— Select Student —</option>
+                <option th:each="s : ${students}" th:value="${s.studentNo}" th:text="${s.studentNo + ' — ' + s.fullName}"></option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom:0">
+              <label class="form-label">Date</label>
+              <input class="form-control" name="sessionDate" type="date" th:value="${today}" required>
+            </div>
+            <div class="form-group" style="margin-bottom:0">
+              <label class="form-label">Status</label>
+              <select class="form-control" name="status" required>
+                <option value="PRESENT">Present</option>
+                <option value="ABSENT">Absent</option>
+                <option value="LATE">Late</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom:0">
+              <label class="form-label">Note</label>
+              <input class="form-control" name="note" placeholder="Optional...">
+            </div>
+            <div class="form-group" style="margin-bottom:0">
+              <label class="form-label">&nbsp;</label>
+              <button type="submit" class="btn btn-success" style="width:100%">Record</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3>Attendance Records</h3></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Date</th><th>Student No</th><th>Name</th><th>Status</th><th>Note</th></tr></thead>
+          <tbody>
+            <tr th:each="a : ${attendanceRecords}">
+              <td class="td-muted" style="font-family:monospace" th:text="${a.sessionDate}"></td>
+              <td class="td-mono" th:text="${a.studentNo}"></td>
+              <td class="td-name" th:text="${a.studentName}"></td>
+              <td>
+                <span th:if="${a.status=='PRESENT'}" class="badge badge-present">Present</span>
+                <span th:if="${a.status=='ABSENT'}"  class="badge badge-absent">Absent</span>
+                <span th:if="${a.status=='LATE'}"    class="badge badge-late">Late</span>
+              </td>
+              <td class="td-muted" th:text="${a.note ?: '—'}"></td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(attendanceRecords)}">
+              <td colspan="5"><div class="empty-state"><div class="empty-state-icon">📅</div><p>No records yet.</p></div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+</div>
+
+<div class="modal-overlay" id="bulkModal">
+  <div class="modal" style="max-width:640px">
+    <div class="modal-header">
+      <span class="modal-title">📋 Bulk Attendance</span>
+      <button class="modal-close" onclick="closeModal('bulkModal')">✕</button>
+    </div>
+    <form th:action="@{/lecturer/courses/} + ${course.id} + '/attendance/bulk'" method="post">
+      <div class="form-group">
+        <label class="form-label">Session Date</label>
+        <input class="form-control" name="sessionDate" type="date" th:value="${today}" required style="max-width:200px">
+      </div>
+      <div style="background:var(--gray-50);border-radius:var(--radius);padding:14px;margin-bottom:16px">
+        <div style="display:grid;grid-template-columns:1fr 140px;gap:10px;padding:8px 0;border-bottom:1px solid var(--gray-200);margin-bottom:8px">
+          <span style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--gray-400)">Student</span>
+          <span style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--gray-400)">Status</span>
+        </div>
+        <div th:each="s : ${students}" style="display:grid;grid-template-columns:1fr 140px;gap:10px;align-items:center;padding:6px 0;border-bottom:1px solid var(--gray-100)">
+          <div>
+            <input type="hidden" name="studentNos" th:value="${s.studentNo}">
+            <span style="font-size:13px;font-weight:500" th:text="${s.fullName}"></span>
+            <span class="td-mono" style="margin-left:8px;font-size:11px" th:text="${s.studentNo}"></span>
+          </div>
+          <select class="form-control" name="statuses" style="padding:5px 8px;font-size:12px">
+            <option value="PRESENT">Present</option>
+            <option value="ABSENT">Absent</option>
+            <option value="LATE">Late</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="closeModal('bulkModal')">Cancel</button>
+        <button type="submit" class="btn btn-success">Save All Attendance</button>
+      </div>
+    </form>
+  </div>
+</div>
+  <script th:src="@{/js/sapms.js}"></script>
+</body></html>

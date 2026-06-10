@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SAPMS — AI Early Warning</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/sapms.css}">
+  <style>
+/* ── AI Response Styling ── */
+.ai-box { background: var(--gray-50); border: 1px solid var(--blue-100); border-radius: var(--radius-lg); padding: 24px; }
+.ai-header { display:flex; align-items:center; gap:12px; margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid var(--gray-200); }
+.ai-icon { width:42px; height:42px; background:linear-gradient(135deg,var(--blue-500),var(--blue-700)); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
+.ai-content h2.ai-h2 { font-size:16px; font-weight:800; color:var(--gray-900); margin:18px 0 8px; }
+.ai-content h3.ai-h3 { font-size:15px; font-weight:700; color:var(--blue-700); margin:16px 0 6px; }
+.ai-content h4.ai-h4 { font-size:14px; font-weight:700; color:var(--gray-700); margin:12px 0 4px; }
+.ai-content p.ai-p { font-size:14px; color:var(--gray-700); line-height:1.75; margin:6px 0; }
+.ai-content ul.ai-ul { padding-left:20px; margin:8px 0; }
+.ai-content ol.ai-ol { padding-left:20px; margin:8px 0; }
+.ai-content li { font-size:14px; color:var(--gray-700); line-height:1.7; margin:3px 0; }
+.ai-content strong { color:var(--gray-900); font-weight:700; }
+.ai-content em { color:var(--gray-600); font-style:italic; }
+.ai-content code.ai-code { background:var(--blue-50); border:1px solid var(--blue-100); color:var(--blue-700); padding:1px 6px; border-radius:4px; font-size:12px; font-family:monospace; }
+.ai-content hr.ai-hr { border:none; border-top:1px solid var(--gray-200); margin:14px 0; }
+.ai-content div.ai-spacer { height:6px; }
+.ai-content table.ai-table { width:100%; border-collapse:collapse; margin:12px 0; font-size:13px; }
+.ai-content table.ai-table th { background:var(--blue-600); color:#fff; padding:8px 12px; text-align:left; font-weight:700; font-size:12px; }
+.ai-content table.ai-table td { padding:8px 12px; border-bottom:1px solid var(--gray-200); color:var(--gray-700); }
+.ai-content table.ai-table tr:last-child td { border-bottom:none; }
+.ai-content table.ai-table tr:nth-child(even) td { background:var(--gray-50); }
+.ai-loading { display:none; align-items:center; gap:10px; color:var(--blue-600); font-weight:500; margin-top:16px; }
+.ai-loading.show { display:flex; }
+.ai-dot { width:8px; height:8px; border-radius:50%; background:var(--blue-500); animation:pulse 1s ease infinite; }
+.ai-dot:nth-child(2) { animation-delay:.2s; }
+.ai-dot:nth-child(3) { animation-delay:.4s; }
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon">S</div>
+    <div class="brand-info"><h2>SAPMS</h2><span>Lecturer</span></div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-group"><span class="nav-label">Teaching</span>
+      <a th:href="@{/lecturer/dashboard}" class="nav-item">🏠 Dashboard</a>
+      <a th:href="@{/lecturer/reports}" class="nav-item">📊 My Reports</a>
+    </div>
+    <div class="nav-group"><span class="nav-label">Account</span>
+      <a th:href="@{/lecturer/profile}" class="nav-item">👤 My Profile</a>
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="sidebar-user">
+      <div class="sidebar-avatar">L</div>
+      <div class="sidebar-user-info"><p th:text="${lecturer != null ? lecturer.fullName : 'Lecturer'}">Lecturer</p><span>Lecturer</span></div>
+    </div>
+    <form th:action="@{/logout}" method="post"><button type="submit" class="btn-logout">🚪 Sign Out</button></form>
+  </div>
+</aside>
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <a th:href="@{/lecturer/dashboard}" class="btn btn-outline btn-sm">← Back</a>
+      <span class="topbar-title">🤖 AI Early Warning — <span th:text="${course.courseName}"></span></span>
+    </div>
+  </div>
+  <div class="content">
+    <div class="card">
+      <div class="card-header"><h3>Student At-Risk Detection</h3></div>
+      <div class="card-body">
+        <p style="color:var(--gray-500);font-size:13px;line-height:1.6;margin-bottom:20px">
+          AI will analyze all student grades in this course and identify students who may be
+          at risk of failing, along with recommended interventions.
+        </p>
+        <form th:action="@{/lecturer/ai-warning/} + ${course.id}" method="post" onsubmit="showLoading()">
+          <button type="submit" class="btn btn-primary">🤖 Run Early Warning Analysis</button>
+        </form>
+        <div class="ai-loading" id="loadingIndicator">
+          <div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div>
+          <span>AI is analyzing student performance...</span>
+        </div>
+      </div>
+    </div>
+    <div th:if="${!#strings.isEmpty(aiResponse)}" class="card">
+      <div class="card-header">
+        <h3>⚠ AI Early Warning Report</h3>
+        <span style="font-size:11px;color:var(--gray-400)">Powered by OpenRouter AI</span>
+      </div>
+      <div class="card-body">
+        <div class="ai-box">
+          <div class="ai-header">
+            <div class="ai-icon">🤖</div>
+            <div>
+              <strong style="font-size:14px;color:var(--gray-900)">AI Academic Advisor</strong>
+              <br><span style="font-size:12px;color:var(--gray-400)">Course: <span th:text="${course.courseName}"></span></span>
+            </div>
+          </div>
+          <div class="ai-content" th:utext="${aiResponse}"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+</div>
+<script>function showLoading() { document.getElementById('loadingIndicator').classList.add('show'); }</script>
+  <script th:src="@{/js/sapms.js}"></script>
+</body></html>

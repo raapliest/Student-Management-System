@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SAPMS — Grades</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/sapms.css}">
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon">S</div>
+    <div class="brand-info"><h2>SAPMS</h2><span>Lecturer</span></div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-group">
+      <span class="nav-label">Teaching</span>
+      <a th:href="@{/lecturer/dashboard}" class="nav-item  active"><span class="nav-icon">🏠</span>Dashboard</a>
+      <a th:href="@{/lecturer/reports}"   class="nav-item"><span class="nav-icon">📊</span>My Reports</a>
+    </div>
+    <div class="nav-group">
+      <span class="nav-label">Account</span>
+      <a th:href="@{/lecturer/profile}" class="nav-item"><span class="nav-icon">👤</span>My Profile</a>
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="sidebar-user">
+      <div class="sidebar-avatar">L</div>
+      <div class="sidebar-user-info"><p th:text="${lecturer != null ? lecturer.fullName : 'Lecturer'}">Lecturer</p><span>Lecturer</span></div>
+    </div>
+    <form th:action="@{/logout}" method="post">
+      <button type="submit" class="btn-logout">🚪 Sign Out</button>
+    </form>
+  </div>
+</aside>
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <a th:href="@{/lecturer/dashboard}" class="btn btn-outline btn-sm">← Back</a>
+      <span class="topbar-title" th:text="${'Grades — ' + course.courseName}"></span>
+    </div>
+  </div>
+  <div class="content">
+    <div class="stats-grid stats-3">
+      <div class="stat-card">
+        <div class="stat-icon-wrap green">✅</div>
+        <div class="stat-value" th:text="${passingCount}">0</div>
+        <div class="stat-label">Passing</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon-wrap red">❌</div>
+        <div class="stat-value" th:text="${failingCount}">0</div>
+        <div class="stat-label">Failing</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon-wrap amber">⚡</div>
+        <div class="stat-value" th:text="${atRiskCount}">0</div>
+        <div class="stat-label">At Risk</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3>Enter / Update Grade</h3></div>
+      <div class="card-body">
+        <form th:action="@{/lecturer/courses/} + ${course.id} + '/grades/save'" method="post">
+          <div class="grade-form-grid">
+            <div class="form-group" style="margin-bottom:0">
+              <label class="form-label">Student</label>
+              <select class="form-control" name="studentNo" required>
+                <option value="">— Select Student —</option>
+                <option th:each="s : ${students}" th:value="${s.studentNo}" th:text="${s.studentNo + ' — ' + s.fullName}"></option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom:0">
+              <label class="form-label">Assignment (20%)</label>
+              <input class="form-control" name="assignment" type="number" step="0.01" min="0" max="100" placeholder="0–100">
+            </div>
+            <div class="form-group" style="margin-bottom:0">
+              <label class="form-label">Midterm (30%)</label>
+              <input class="form-control" name="midterm" type="number" step="0.01" min="0" max="100" placeholder="0–100">
+            </div>
+            <div class="form-group" style="margin-bottom:0">
+              <label class="form-label">Final Exam (50%)</label>
+              <input class="form-control" name="finalScore" type="number" step="0.01" min="0" max="100" placeholder="0–100">
+            </div>
+            <div class="form-group" style="margin-bottom:0">
+              <label class="form-label">&nbsp;</label>
+              <button type="submit" class="btn btn-primary" style="width:100%">Save</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3>Grade List</h3></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Student No</th><th>Name</th><th>Assignment</th><th>Midterm</th><th>Final</th><th>Total</th><th>Grade</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr th:each="g : ${grades}">
+              <td class="td-mono" th:text="${g.studentNo}"></td>
+              <td class="td-name" th:text="${g.studentName}"></td>
+              <td class="td-muted" th:text="${g.assignmentScore ?: '—'}"></td>
+              <td class="td-muted" th:text="${g.midtermScore ?: '—'}"></td>
+              <td class="td-muted" th:text="${g.finalScore ?: '—'}"></td>
+              <td style="font-weight:700;color:var(--gray-800)" th:text="${g.totalScore ?: '—'}"></td>
+              <td style="font-weight:800;font-size:17px;color:var(--blue-700)" th:text="${g.gradeLetter ?: '—'}"></td>
+              <td>
+                <span th:if="${g.status=='PASS'}"    class="badge badge-pass">Pass</span>
+                <span th:if="${g.status=='FAIL'}"    class="badge badge-fail">Fail</span>
+                <span th:if="${g.status=='AT_RISK'}" class="badge badge-risk">At Risk</span>
+                <span th:if="${g.status=='ACTIVE'}"  class="badge badge-active">Active</span>
+              </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(grades)}">
+              <td colspan="8"><div class="empty-state"><div class="empty-state-icon">📝</div><p>No grades entered yet.</p></div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+</div>
+  <script th:src="@{/js/sapms.js}"></script>
+</body></html>
