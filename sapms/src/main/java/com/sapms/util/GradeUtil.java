@@ -1,6 +1,8 @@
 package com.sapms.util;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+
 public class GradeUtil {
     public static BigDecimal calculateTotal(BigDecimal assignment, BigDecimal midterm, BigDecimal finalScore) {
         if (assignment == null) assignment = BigDecimal.ZERO;
@@ -12,20 +14,22 @@ public class GradeUtil {
                 .add(finalScore.multiply(new BigDecimal("0.50")));
         return total.setScale(2, RoundingMode.HALF_UP);
     }
+
     public static String calculateGradeLetter(BigDecimal total) {
         if (total == null) return "-";
         double score = total.doubleValue();
         if (score >= 90) return "A";
         if (score >= 80) return "B";
         if (score >= 70) return "C";
-        if (score >= 60) return "D";
+        if (score >= 51) return "D";
         return "F";
     }
+
     public static String calculateStatus(BigDecimal total) {
         if (total == null) return "ACTIVE";
         double score = total.doubleValue();
-        if (score >= 60) return "PASS";
-        if (score >= 50) return "AT_RISK";
+        if (score >= 75) return "PASS";
+        if (score >= 51) return "AT_RISK";
         return "FAIL";
     }
 }

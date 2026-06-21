@@ -6,6 +6,7 @@ import com.sapms.pattern.observer.AcademicEventPublisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -13,11 +14,11 @@ import java.util.List;
 
 /**
  * DESIGN PATTERN: Decorator — Concrete Decorator
- *
+ * <p>
  * Wraps a GradeOperation and adds:
- *   1. Audit logging of every save operation
- *   2. Automatic at-risk event publishing via Observer pattern
- *
+ * 1. Audit logging of every save operation
+ * 2. Automatic at-risk event publishing via Observer pattern
+ * <p>
  * The original GradeOperation is not modified at all.
  */
 @Component("loggingGradeDecorator")
@@ -34,7 +35,7 @@ public class LoggingGradeDecorator implements GradeOperation {
     public LoggingGradeDecorator(
             @Qualifier("baseGradeOperation") GradeOperation wrapped,
             AcademicEventPublisher eventPublisher) {
-        this.wrapped        = wrapped;
+        this.wrapped = wrapped;
         this.eventPublisher = eventPublisher;
     }
 
@@ -42,10 +43,10 @@ public class LoggingGradeDecorator implements GradeOperation {
     public void saveGrade(String studentNo, Long courseId, BigDecimal assignment,
                           BigDecimal midterm, BigDecimal finalScore) {
         String logEntry = String.format("[%s] GRADE_SAVE | student=%s | course=%d | A=%.1f M=%.1f F=%.1f",
-            LocalDateTime.now(), studentNo, courseId,
-            assignment  != null ? assignment.doubleValue()  : 0,
-            midterm     != null ? midterm.doubleValue()     : 0,
-            finalScore  != null ? finalScore.doubleValue()  : 0);
+                LocalDateTime.now(), studentNo, courseId,
+                assignment != null ? assignment.doubleValue() : 0,
+                midterm != null ? midterm.doubleValue() : 0,
+                finalScore != null ? finalScore.doubleValue() : 0);
 
         System.out.println("📝 AUDIT: " + logEntry);
         auditLog.add(logEntry);
@@ -56,19 +57,19 @@ public class LoggingGradeDecorator implements GradeOperation {
         // Post-save: check if student is now at-risk and fire Observer event
         List<Grade> grades = wrapped.getGradesByCourse(courseId);
         grades.stream()
-            .filter(g -> studentNo.equals(g.getStudentNo()))
-            .findFirst()
-            .ifPresent(g -> {
-                if ("AT_RISK".equals(g.getStatus())) {
-                    eventPublisher.publish(new AcademicEvent(
-                        AcademicEvent.Type.STUDENT_AT_RISK, studentNo,
-                        "Score " + g.getTotalScore() + " — at risk of failing"));
-                } else if ("FAIL".equals(g.getStatus())) {
-                    eventPublisher.publish(new AcademicEvent(
-                        AcademicEvent.Type.GRADE_SUBMITTED, studentNo,
-                        "Failed with score " + g.getTotalScore()));
-                }
-            });
+                .filter(g -> studentNo.equals(g.getStudentNo()))
+                .findFirst()
+                .ifPresent(g -> {
+                    if ("AT_RISK".equals(g.getStatus())) {
+                        eventPublisher.publish(new AcademicEvent(
+                                AcademicEvent.Type.STUDENT_AT_RISK, studentNo,
+                                "Score " + g.getTotalScore() + " — at risk of failing"));
+                    } else if ("FAIL".equals(g.getStatus())) {
+                        eventPublisher.publish(new AcademicEvent(
+                                AcademicEvent.Type.GRADE_SUBMITTED, studentNo,
+                                "Failed with score " + g.getTotalScore()));
+                    }
+                });
     }
 
     @Override

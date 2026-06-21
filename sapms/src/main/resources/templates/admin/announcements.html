@@ -1,107 +1,120 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SAPMS — Announcements</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" th:href="@{/css/sapms.css}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAPMS — Announcements</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap"
+          rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/sapms.css}">
 </head>
 <body>
 <div class="layout">
-<aside class="sidebar">
-  <div class="sidebar-brand">
-    <div class="brand-icon">S</div>
-    <div class="brand-info"><h2>SAPMS</h2><span>Admin Panel</span></div>
-  </div>
-  <nav class="sidebar-nav">
-    <div class="nav-group"><span class="nav-label">Overview</span>
-      <a th:href="@{/admin/dashboard}" class="nav-item"><span class="nav-icon">🏠</span>Dashboard</a>
-    </div>
-    <div class="nav-group"><span class="nav-label">Management</span>
-      <a th:href="@{/admin/students}" class="nav-item"><span class="nav-icon">👥</span>Students</a>
-      <a th:href="@{/admin/lecturers}" class="nav-item"><span class="nav-icon">👨‍🏫</span>Lecturers</a>
-      <a th:href="@{/admin/courses}" class="nav-item"><span class="nav-icon">📚</span>Courses</a>
-    </div>
-    <div class="nav-group"><span class="nav-label">Communication</span>
-      <a th:href="@{/admin/announcements}" class="nav-item active"><span class="nav-icon">📢</span>Announcements</a>
-    </div>
-    <div class="nav-group"><span class="nav-label">Analytics</span>
-      <a th:href="@{/admin/reports}" class="nav-item"><span class="nav-icon">📊</span>Reports</a>
-    </div>
-    <div class="nav-group"><span class="nav-label">System</span>
-      <a th:href="@{/register}" class="nav-item"><span class="nav-icon">➕</span>Register Student</a>
-    </div>
-  </nav>
-  <div class="sidebar-footer">
-    <div class="sidebar-user">
-      <div class="sidebar-avatar">A</div>
-      <div class="sidebar-user-info"><p>Administrator</p><span>System Admin</span></div>
-    </div>
-    <form th:action="@{/logout}" method="post">
-      <button type="submit" class="btn-logout">🚪 Sign Out</button>
-    </form>
-  </div>
-</aside>
-<main class="main">
-  <div class="topbar">
-    <span class="topbar-title">Announcements</span>
-  </div>
-  <div class="content">
-    <div class="grid-auto-wide">
-      <div class="card">
-        <div class="card-header"><h3>All Announcements (<span th:text="${#lists.size(announcements)}">0</span>)</h3></div>
-        <div class="card-body">
-          <div th:each="a : ${announcements}" class="announce-card-full">
-            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
-              <h4 style="font-size:14px;font-weight:700;color:var(--gray-800)" th:text="${a.title}"></h4>
-              <form th:action="@{/admin/announcements/delete/} + ${a.id}" method="post"
-                onsubmit="return confirm('Delete this announcement?')" style="flex-shrink:0">
-                <button type="submit" class="btn btn-ghost btn-xs" style="color:var(--danger)">🗑</button>
-              </form>
-            </div>
-            <p style="font-size:13px;color:var(--gray-500);margin-top:8px;line-height:1.6" th:text="${a.content}"></p>
-            <div class="announce-meta" style="margin-top:10px">
-              <span class="badge" th:classappend="${a.targetRole=='ALL' ? 'badge-all' : (a.targetRole=='STUDENT' ? 'badge-student' : 'badge-lecturer')}" th:text="${a.targetRole}"></span>
-              <span>By <strong th:text="${a.createdBy}"></strong></span>
-              <span th:text="${#temporals.format(a.createdAt,'dd MMM yyyy, HH:mm')}"></span>
-            </div>
-          </div>
-          <div th:if="${#lists.isEmpty(announcements)}" class="empty-state">
-            <div class="empty-state-icon">📢</div><p>No announcements yet.</p>
-          </div>
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon">S</div>
+            <div class="brand-info"><h2>SAPMS</h2><span>Admin Panel</span></div>
         </div>
-      </div>
-      <div>
-        <div class="card" style="position:sticky;top:76px">
-          <div class="card-header"><h3>📮 Post Announcement</h3></div>
-          <div class="card-body">
-            <form th:action="@{/admin/announcements/add}" method="post">
-              <div class="form-group">
-                <label class="form-label">Title</label>
-                <input class="form-control" name="title" placeholder="Announcement title..." required>
-              </div>
-              <div class="form-group">
-                <label class="form-label">Content</label>
-                <textarea class="form-control" name="content" placeholder="Write your announcement..." required></textarea>
-              </div>
-              <div class="form-group">
-                <label class="form-label">Target Audience</label>
-                <select class="form-control" name="targetRole">
-                  <option value="ALL">Everyone (Students + Lecturers)</option>
-                  <option value="STUDENT">Students Only</option>
-                  <option value="LECTURER">Lecturers Only</option>
-                </select>
-              </div>
-              <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center">Post Announcement</button>
+        <nav class="sidebar-nav">
+            <div class="nav-group"><span class="nav-label">Overview</span>
+                <a th:href="@{/admin/dashboard}" class="nav-item"><span class="nav-icon">🏠</span>Dashboard</a>
+            </div>
+            <div class="nav-group"><span class="nav-label">Management</span>
+                <a th:href="@{/admin/students}" class="nav-item"><span class="nav-icon">👥</span>Students</a>
+                <a th:href="@{/admin/lecturers}" class="nav-item"><span class="nav-icon">👨‍🏫</span>Lecturers</a>
+                <a th:href="@{/admin/courses}" class="nav-item"><span class="nav-icon">📚</span>Courses</a>
+                <a th:href="@{/admin/academic-years}" class="nav-item"><span class="nav-icon">📅</span>Academic Years</a>
+            </div>
+            <div class="nav-group"><span class="nav-label">Communication</span>
+                <a th:href="@{/admin/announcements}" class="nav-item"><span class="nav-icon">📢</span>Announcements</a>
+            </div>
+            <div class="nav-group"><span class="nav-label">Analytics</span>
+                <a th:href="@{/admin/reports}" class="nav-item"><span class="nav-icon">📊</span>Reports</a>
+                <a th:href="@{/admin/ai-report}" class="nav-item"><span class="nav-icon">🤖</span>AI Summary</a>
+            </div>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="sidebar-user">
+                <div class="sidebar-avatar">A</div>
+                <div class="sidebar-user-info"><p>Administrator</p><span>System Admin</span></div>
+            </div>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn-logout">🚪 Sign Out</button>
             </form>
-          </div>
         </div>
-      </div>
-    </div>
-  </div>
-</main>
+    </aside>
+    <main class="main">
+        <div class="topbar">
+            <span class="topbar-title">Announcements</span>
+        </div>
+        <div class="content">
+            <div class="grid-auto-wide">
+                <div class="card">
+                    <div class="card-header"><h3>All Announcements (<span
+                            th:text="${#lists.size(announcements)}">0</span>)</h3></div>
+                    <div class="card-body">
+                        <div th:each="a : ${announcements}" class="announce-card-full">
+                            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+                                <h4 style="font-size:14px;font-weight:700;color:var(--gray-800)"
+                                    th:text="${a.title}"></h4>
+                                <form th:action="@{/admin/announcements/delete/} + ${a.id}" method="post"
+                                      onsubmit="return confirm('Delete this announcement?')" style="flex-shrink:0">
+                                    <button type="submit" class="btn btn-ghost btn-xs" style="color:var(--danger)">🗑
+                                    </button>
+                                </form>
+                            </div>
+                            <p style="font-size:13px;color:var(--gray-500);margin-top:8px;line-height:1.6"
+                               th:text="${a.content}"></p>
+                            <div class="announce-meta" style="margin-top:10px">
+                                <span class="badge"
+                                      th:classappend="${a.targetRole=='ALL' ? 'badge-all' : (a.targetRole=='STUDENT' ? 'badge-student' : 'badge-lecturer')}"
+                                      th:text="${a.targetRole}"></span>
+                                <span>By <strong th:text="${a.createdBy}"></strong></span>
+                                <span th:text="${#temporals.format(a.createdAt,'dd MMM yyyy, HH:mm')}"></span>
+                            </div>
+                        </div>
+                        <div th:if="${#lists.isEmpty(announcements)}" class="empty-state">
+                            <div class="empty-state-icon">📢</div>
+                            <p>No announcements yet.</p>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="card" style="position:sticky;top:76px">
+                        <div class="card-header"><h3>📮 Post Announcement</h3></div>
+                        <div class="card-body">
+                            <form th:action="@{/admin/announcements/add}" method="post">
+                                <div class="form-group">
+                                    <label class="form-label">Title</label>
+                                    <input class="form-control" name="title" placeholder="Announcement title..."
+                                           required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Content</label>
+                                    <textarea class="form-control" name="content"
+                                              placeholder="Write your announcement..." required></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Target Audience</label>
+                                    <select class="form-control" name="targetRole">
+                                        <option value="ALL">Everyone (Students + Lecturers)</option>
+                                        <option value="STUDENT">Students Only</option>
+                                        <option value="LECTURER">Lecturers Only</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center">
+                                    Post Announcement
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
 </div>
-  <script th:src="@{/js/sapms.js}"></script>
-</body></html>
+<script th:src="@{/js/sapms.js}"></script>
+</body>
+</html>

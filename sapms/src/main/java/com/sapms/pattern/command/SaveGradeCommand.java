@@ -3,6 +3,7 @@ package com.sapms.pattern.command;
 import com.sapms.dao.GradeDao;
 import com.sapms.entity.Grade;
 import com.sapms.util.GradeUtil;
+
 import java.math.BigDecimal;
 
 /**
@@ -21,12 +22,12 @@ public class SaveGradeCommand implements Command {
     private Grade previousGrade;
 
     public SaveGradeCommand(GradeDao gradeDao, String studentNo, Long courseId,
-                             BigDecimal assignment, BigDecimal midterm, BigDecimal finalScore) {
-        this.gradeDao   = gradeDao;
-        this.studentNo  = studentNo;
-        this.courseId   = courseId;
+                            BigDecimal assignment, BigDecimal midterm, BigDecimal finalScore) {
+        this.gradeDao = gradeDao;
+        this.studentNo = studentNo;
+        this.courseId = courseId;
         this.assignment = assignment;
-        this.midterm    = midterm;
+        this.midterm = midterm;
         this.finalScore = finalScore;
     }
 
@@ -66,9 +67,9 @@ public class SaveGradeCommand implements Command {
     @Override
     public String getDescription() {
         return String.format("SaveGrade[student=%s, course=%d, A=%.1f, M=%.1f, F=%.1f]",
-            studentNo, courseId,
-            assignment  != null ? assignment.doubleValue()  : 0,
-            midterm     != null ? midterm.doubleValue()     : 0,
-            finalScore  != null ? finalScore.doubleValue()  : 0);
+                studentNo, courseId,
+                assignment != null ? assignment.doubleValue() : 0,
+                midterm != null ? midterm.doubleValue() : 0,
+                finalScore != null ? finalScore.doubleValue() : 0);
     }
 }

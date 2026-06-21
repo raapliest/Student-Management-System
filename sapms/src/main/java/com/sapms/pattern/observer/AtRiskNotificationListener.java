@@ -1,6 +1,7 @@
 package com.sapms.pattern.observer;
 
 import org.springframework.stereotype.Component;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +18,7 @@ public class AtRiskNotificationListener implements AcademicEventListener {
     @Override
     public void onEvent(AcademicEvent event) {
         String msg = String.format("[ALERT] %s: %s — %s",
-            event.getType(), event.getStudentNo(), event.getMessage());
+                event.getType(), event.getStudentNo(), event.getMessage());
         notifications.add(msg);
         System.out.println("📢 Academic Alert: " + msg);
     }

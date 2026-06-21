@@ -2,6 +2,7 @@ package com.sapms.pattern.command;
 
 import com.sapms.dao.AttendanceDao;
 import com.sapms.entity.Attendance;
+
 import java.time.LocalDate;
 
 /**
@@ -20,14 +21,14 @@ public class RecordAttendanceCommand implements Command {
     private Long insertedId; // for undo
 
     public RecordAttendanceCommand(AttendanceDao attendanceDao, String studentNo,
-                                    Long courseId, LocalDate sessionDate,
-                                    String status, String note) {
+                                   Long courseId, LocalDate sessionDate,
+                                   String status, String note) {
         this.attendanceDao = attendanceDao;
-        this.studentNo     = studentNo;
-        this.courseId      = courseId;
-        this.sessionDate   = sessionDate;
-        this.status        = status;
-        this.note          = note;
+        this.studentNo = studentNo;
+        this.courseId = courseId;
+        this.sessionDate = sessionDate;
+        this.status = status;
+        this.note = note;
     }
 
     @Override
@@ -53,6 +54,6 @@ public class RecordAttendanceCommand implements Command {
     @Override
     public String getDescription() {
         return String.format("RecordAttendance[student=%s, course=%d, date=%s, status=%s]",
-            studentNo, courseId, sessionDate, status);
+                studentNo, courseId, sessionDate, status);
     }
 }

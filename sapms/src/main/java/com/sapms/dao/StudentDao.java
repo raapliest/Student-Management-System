@@ -1,22 +1,39 @@
 package com.sapms.dao;
+
 import com.sapms.entity.Student;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+
 import java.util.List;
+
 @Repository
 public class StudentDao {
-    @Autowired private JdbcTemplate jdbc;
+    @Autowired
+    private JdbcTemplate jdbc;
 
     private Student map(java.sql.ResultSet rs, int i) throws java.sql.SQLException {
         Student s = new Student();
-        s.setStudentNo(rs.getString("student_no")); s.setFullName(rs.getString("full_name"));
-        s.setEmail(rs.getString("email")); s.setMajorNo(rs.getString("major_no"));
-        s.setClassNo(rs.getString("class_no")); s.setStudentSeq(rs.getString("student_seq"));
-        s.setAcademicYearId(rs.getLong("academic_year_id")); s.setUserId(rs.getLong("user_id"));
-        try { s.setMajorName(rs.getString("major_name")); } catch (Exception e) {}
-        try { s.setClassName(rs.getString("class_name")); } catch (Exception e) {}
-        try { s.setAcademicYearLabel(rs.getString("year_label")); } catch (Exception e) {}
+        s.setStudentNo(rs.getString("student_no"));
+        s.setFullName(rs.getString("full_name"));
+        s.setEmail(rs.getString("email"));
+        s.setMajorNo(rs.getString("major_no"));
+        s.setClassNo(rs.getString("class_no"));
+        s.setStudentSeq(rs.getString("student_seq"));
+        s.setAcademicYearId(rs.getLong("academic_year_id"));
+        s.setUserId(rs.getLong("user_id"));
+        try {
+            s.setMajorName(rs.getString("major_name"));
+        } catch (Exception e) {
+        }
+        try {
+            s.setClassName(rs.getString("class_name"));
+        } catch (Exception e) {
+        }
+        try {
+            s.setAcademicYearLabel(rs.getString("year_label"));
+        } catch (Exception e) {
+        }
         return s;
     }
 
@@ -24,7 +41,7 @@ public class StudentDao {
 
     public void insert(Student s) {
         jdbc.update("INSERT INTO student(student_no,user_id,full_name,email,major_no,class_no,student_seq,academic_year_id) VALUES(?,?,?,?,?,?,?,?)",
-            s.getStudentNo(), s.getUserId(), s.getFullName(), s.getEmail(), s.getMajorNo(), s.getClassNo(), s.getStudentSeq(), s.getAcademicYearId());
+                s.getStudentNo(), s.getUserId(), s.getFullName(), s.getEmail(), s.getMajorNo(), s.getClassNo(), s.getStudentSeq(), s.getAcademicYearId());
     }
 
     public List<Student> findAll() {
@@ -37,7 +54,9 @@ public class StudentDao {
         if (keyword != null && !keyword.isBlank()) {
             sql.append(" AND (s.full_name LIKE ? OR s.student_no LIKE ? OR s.email LIKE ?)");
             String k = "%" + keyword + "%";
-            params.add(k); params.add(k); params.add(k);
+            params.add(k);
+            params.add(k);
+            params.add(k);
         }
         if (majorNo != null && !majorNo.isBlank()) {
             sql.append(" AND s.major_no = ?");
@@ -63,9 +82,18 @@ public class StudentDao {
         Long userId = jdbc.queryForObject("SELECT user_id FROM student WHERE student_no=?", Long.class, studentNo);
         jdbc.update("DELETE FROM attendance WHERE student_no=?", studentNo);
         jdbc.update("DELETE FROM grade WHERE student_no=?", studentNo);
+        jdbc.update("DELETE FROM enrollment WHERE student_no=?", studentNo);
         jdbc.update("DELETE FROM student WHERE student_no=?", studentNo);
         jdbc.update("DELETE FROM users WHERE id=?", userId);
     }
 
-    public int countAll() { return jdbc.queryForObject("SELECT COUNT(*) FROM student", Integer.class); }
+    public List<Student> findByCourse(Long courseId) {
+        return jdbc.query(
+                BASE_SQL + " JOIN enrollment e ON s.student_no=e.student_no WHERE e.course_id=? ORDER BY s.student_no",
+                this::map, courseId);
+    }
+
+    public int countAll() {
+        return jdbc.queryForObject("SELECT COUNT(*) FROM student", Integer.class);
+    }
 }

@@ -22,16 +22,27 @@ public class AcademicEvent {
     private final LocalDateTime timestamp;
 
     public AcademicEvent(Type type, String studentNo, String message) {
-        this.type      = type;
+        this.type = type;
         this.studentNo = studentNo;
-        this.message   = message;
+        this.message = message;
         this.timestamp = LocalDateTime.now();
     }
 
-    public Type getType()          { return type; }
-    public String getStudentNo()   { return studentNo; }
-    public String getMessage()     { return message; }
-    public LocalDateTime getTimestamp() { return timestamp; }
+    public Type getType() {
+        return type;
+    }
+
+    public String getStudentNo() {
+        return studentNo;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public LocalDateTime getTimestamp() {
+        return timestamp;
+    }
 
     @Override
     public String toString() {

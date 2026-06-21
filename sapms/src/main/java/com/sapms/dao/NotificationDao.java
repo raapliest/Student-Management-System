@@ -1,17 +1,23 @@
 package com.sapms.dao;
+
 import com.sapms.entity.Notification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+
 import java.util.List;
+
 @Repository
 public class NotificationDao {
-    @Autowired private JdbcTemplate jdbc;
+    @Autowired
+    private JdbcTemplate jdbc;
 
     private Notification map(java.sql.ResultSet rs, int i) throws java.sql.SQLException {
         Notification n = new Notification();
-        n.setId(rs.getLong("id")); n.setUserId(rs.getLong("user_id"));
-        n.setMessage(rs.getString("message")); n.setRead(rs.getInt("is_read")==1);
+        n.setId(rs.getLong("id"));
+        n.setUserId(rs.getLong("user_id"));
+        n.setMessage(rs.getString("message"));
+        n.setRead(rs.getInt("is_read") == 1);
         n.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
         return n;
     }

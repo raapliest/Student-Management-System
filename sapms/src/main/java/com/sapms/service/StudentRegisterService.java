@@ -16,12 +16,17 @@ public class StudentRegisterService {
 
     @Transactional
     public Student register(String fullName, String email, String majorNo) {
-        Long activeYearId = jdbc.queryForObject("SELECT id FROM academic_year WHERE is_active=1 LIMIT 1", Long.class);
+        Long activeYearId;
+        try {
+            activeYearId = jdbc.queryForObject("SELECT id FROM academic_year WHERE is_active=1 LIMIT 1", Long.class);
+        } catch (org.springframework.dao.EmptyResultDataAccessException e) {
+            throw new RuntimeException("No active academic year. Please contact the administrator.");
+        }
         ClassInfo cls = classInfoDao.findAvailable(majorNo);
         if (cls == null) throw new RuntimeException("No available class under selected major");
         String nextSeq = NumberUtil.nextSequence(cls.getCurrentSeq(), 3);
         String studentNo = majorNo + cls.getClassNo() + nextSeq;
-        String encodedPw = passwordEncoder.encode("123456");
+        String encodedPw = passwordEncoder.encode("password");
         jdbc.update("INSERT INTO users(username,password,role) VALUES(?,?,'STUDENT')", studentNo, encodedPw);
         Long userId = jdbc.queryForObject("SELECT id FROM users WHERE username=?", Long.class, studentNo);
         Student s = new Student();

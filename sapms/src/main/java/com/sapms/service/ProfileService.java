@@ -1,12 +1,16 @@
 package com.sapms.service;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 @Service
 public class ProfileService {
-    @Autowired private JdbcTemplate jdbc;
-    @Autowired private PasswordEncoder passwordEncoder;
+    @Autowired
+    private JdbcTemplate jdbc;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public void updateStudentProfile(String studentNo, String fullName, String email) {
         jdbc.update("UPDATE student SET full_name=?, email=? WHERE student_no=?", fullName, email, studentNo);

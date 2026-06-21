@@ -1,102 +1,127 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SAPMS — Reports</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" th:href="@{/css/sapms.css}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAPMS — Reports</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap"
+          rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/sapms.css}">
 </head>
 <body>
 <div class="layout">
-<aside class="sidebar">
-  <div class="sidebar-brand">
-    <div class="brand-icon">S</div>
-    <div class="brand-info"><h2>SAPMS</h2><span>Admin Panel</span></div>
-  </div>
-  <nav class="sidebar-nav">
-    <div class="nav-group"><span class="nav-label">Overview</span>
-      <a th:href="@{/admin/dashboard}" class="nav-item"><span class="nav-icon">🏠</span>Dashboard</a>
-    </div>
-    <div class="nav-group"><span class="nav-label">Management</span>
-      <a th:href="@{/admin/students}" class="nav-item"><span class="nav-icon">👥</span>Students</a>
-      <a th:href="@{/admin/lecturers}" class="nav-item"><span class="nav-icon">👨‍🏫</span>Lecturers</a>
-      <a th:href="@{/admin/courses}" class="nav-item"><span class="nav-icon">📚</span>Courses</a>
-    </div>
-    <div class="nav-group"><span class="nav-label">Communication</span>
-      <a th:href="@{/admin/announcements}" class="nav-item"><span class="nav-icon">📢</span>Announcements</a>
-    </div>
-    <div class="nav-group"><span class="nav-label">Analytics</span>
-      <a th:href="@{/admin/reports}" class="nav-item active"><span class="nav-icon">📊</span>Reports</a>
-    </div>
-    <div class="nav-group"><span class="nav-label">System</span>
-      <a th:href="@{/register}" class="nav-item"><span class="nav-icon">➕</span>Register Student</a>
-    </div>
-  </nav>
-  <div class="sidebar-footer">
-    <div class="sidebar-user">
-      <div class="sidebar-avatar">A</div>
-      <div class="sidebar-user-info"><p>Administrator</p><span>System Admin</span></div>
-    </div>
-    <form th:action="@{/logout}" method="post">
-      <button type="submit" class="btn-logout">🚪 Sign Out</button>
-    </form>
-  </div>
-</aside>
-<main class="main">
-  <div class="topbar">
-    <span class="topbar-title">Academic Reports</span>
-    <div class="topbar-right">
-      <span class="topbar-badge">📅 Academic Year 2024/2025</span>
-    </div>
-  </div>
-  <div class="content">
-    <div class="card">
-      <div class="card-header"><h3>📊 Grade Statistics by Course</h3></div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Code</th><th>Course Name</th><th>Students</th><th>Passing</th><th>Failing</th><th>At Risk</th><th>Avg Score</th></tr></thead>
-          <tbody>
-            <tr th:each="r : ${gradeStats}">
-              <td class="td-mono" th:text="${r.course_code}"></td>
-              <td class="td-name" th:text="${r.course_name}"></td>
-              <td style="text-align:center;color:var(--gray-500)" th:text="${r.total}"></td>
-              <td><span class="badge badge-pass" th:text="${r.passing ?: 0}"></span></td>
-              <td><span class="badge badge-fail" th:text="${r.failing ?: 0}"></span></td>
-              <td><span class="badge badge-risk" th:text="${r.at_risk ?: 0}"></span></td>
-              <td style="font-weight:700;color:var(--blue-700)" th:text="${r.avg_score ?: '—'}"></td>
-            </tr>
-            <tr th:if="${#lists.isEmpty(gradeStats)}">
-              <td colspan="7"><div class="empty-state"><p>No grade data available.</p></div></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-header"><h3>📅 Attendance Statistics by Course</h3></div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Code</th><th>Course Name</th><th>Total Sessions</th><th>Present</th><th>Absent</th><th>Late</th></tr></thead>
-          <tbody>
-            <tr th:each="r : ${attendanceStats}">
-              <td class="td-mono" th:text="${r.course_code}"></td>
-              <td class="td-name" th:text="${r.course_name}"></td>
-              <td style="text-align:center;color:var(--gray-500)" th:text="${r.total_records ?: 0}"></td>
-              <td><span class="badge badge-present" th:text="${r.present_count ?: 0}"></span></td>
-              <td><span class="badge badge-absent" th:text="${r.absent_count ?: 0}"></span></td>
-              <td><span class="badge badge-late" th:text="${r.late_count ?: 0}"></span></td>
-            </tr>
-            <tr th:if="${#lists.isEmpty(attendanceStats)}">
-              <td colspan="6"><div class="empty-state"><p>No attendance data available.</p></div></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-</main>
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon">S</div>
+            <div class="brand-info"><h2>SAPMS</h2><span>Admin Panel</span></div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-group"><span class="nav-label">Overview</span>
+                <a th:href="@{/admin/dashboard}" class="nav-item"><span class="nav-icon">🏠</span>Dashboard</a>
+            </div>
+            <div class="nav-group"><span class="nav-label">Management</span>
+                <a th:href="@{/admin/students}" class="nav-item"><span class="nav-icon">👥</span>Students</a>
+                <a th:href="@{/admin/lecturers}" class="nav-item"><span class="nav-icon">👨‍🏫</span>Lecturers</a>
+                <a th:href="@{/admin/courses}" class="nav-item"><span class="nav-icon">📚</span>Courses</a>
+                <a th:href="@{/admin/academic-years}" class="nav-item"><span class="nav-icon">📅</span>Academic Years</a>
+            </div>
+            <div class="nav-group"><span class="nav-label">Communication</span>
+                <a th:href="@{/admin/announcements}" class="nav-item"><span class="nav-icon">📢</span>Announcements</a>
+            </div>
+            <div class="nav-group"><span class="nav-label">Analytics</span>
+                <a th:href="@{/admin/reports}" class="nav-item"><span class="nav-icon">📊</span>Reports</a>
+                <a th:href="@{/admin/ai-report}" class="nav-item"><span class="nav-icon">🤖</span>AI Summary</a>
+            </div>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="sidebar-user">
+                <div class="sidebar-avatar">A</div>
+                <div class="sidebar-user-info"><p>Administrator</p><span>System Admin</span></div>
+            </div>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn-logout">🚪 Sign Out</button>
+            </form>
+        </div>
+    </aside>
+    <main class="main">
+        <div class="topbar">
+            <span class="topbar-title">Academic Reports</span>
+            <div class="topbar-right">
+                <span class="topbar-badge">📅 Academic Year 2024/2025</span>
+            </div>
+        </div>
+        <div class="content">
+            <div class="card">
+                <div class="card-header"><h3>📊 Grade Statistics by Course</h3></div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Course Name</th>
+                            <th>Students</th>
+                            <th>Passing</th>
+                            <th>Failing</th>
+                            <th>At Risk</th>
+                            <th>Avg Score</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="r : ${gradeStats}">
+                            <td class="td-mono" th:text="${r.course_code}"></td>
+                            <td class="td-name" th:text="${r.course_name}"></td>
+                            <td style="text-align:center;color:var(--gray-500)" th:text="${r.total}"></td>
+                            <td><span class="badge badge-pass" th:text="${r.passing ?: 0}"></span></td>
+                            <td><span class="badge badge-fail" th:text="${r.failing ?: 0}"></span></td>
+                            <td><span class="badge badge-risk" th:text="${r.at_risk ?: 0}"></span></td>
+                            <td style="font-weight:700;color:var(--blue-700)" th:text="${r.avg_score ?: '—'}"></td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(gradeStats)}">
+                            <td colspan="7">
+                                <div class="empty-state"><p>No grade data available.</p></div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header"><h3>📅 Attendance Statistics by Course</h3></div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Course Name</th>
+                            <th>Total Sessions</th>
+                            <th>Present</th>
+                            <th>Absent</th>
+                            <th>Late</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="r : ${attendanceStats}">
+                            <td class="td-mono" th:text="${r.course_code}"></td>
+                            <td class="td-name" th:text="${r.course_name}"></td>
+                            <td style="text-align:center;color:var(--gray-500)" th:text="${r.total_records ?: 0}"></td>
+                            <td><span class="badge badge-present" th:text="${r.present_count ?: 0}"></span></td>
+                            <td><span class="badge badge-absent" th:text="${r.absent_count ?: 0}"></span></td>
+                            <td><span class="badge badge-late" th:text="${r.late_count ?: 0}"></span></td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(attendanceStats)}">
+                            <td colspan="6">
+                                <div class="empty-state"><p>No attendance data available.</p></div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
 </div>
-  <script th:src="@{/js/sapms.js}"></script>
-</body></html>
+<script th:src="@{/js/sapms.js}"></script>
+</body>
+</html>

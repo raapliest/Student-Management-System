@@ -19,9 +19,9 @@ public class CustomUserDetailsService implements UserDetailsService {
         String sql = "SELECT username, password, role, enabled FROM users WHERE username = ?";
         try {
             return jdbc.queryForObject(sql, (rs, rowNum) -> {
-                String pw   = rs.getString("password");
+                String pw = rs.getString("password");
                 String role = rs.getString("role");
-                boolean en  = rs.getInt("enabled") == 1;
+                boolean en = rs.getInt("enabled") == 1;
                 return new User(username, pw, en, true, true, true,
                         List.of(new SimpleGrantedAuthority("ROLE_" + role)));
             }, username);
