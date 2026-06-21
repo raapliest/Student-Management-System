@@ -22,3 +22,10 @@ Thumbs.db
 
 # Claude memory (internal tool)
 .claude/
+
+# API keys - NEVER commit these
+KEY
+*.key
+*.env
+.env*
+application-secret.properties
